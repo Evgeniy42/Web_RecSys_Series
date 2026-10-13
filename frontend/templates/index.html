@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <div class="hero">
+        <h1>RecSys Series</h1>
+        <p>Рекомендательный сервис для подбора сериалов</p>
+        <div class="hero-actions">
+            {% if request.session.get('user_id') %}
+                <a href="/series" class="btn btn-primary btn-lg">Смотреть сериалы</a>
+                <a href="/recommendation" class="btn btn-secondary btn-lg">Мои рекомендации</a>
+            {% else %}
+                <a href="/auth/register" class="btn btn-primary btn-lg">Начать</a>
+                <a href="/auth/login" class="btn btn-secondary btn-lg">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h3>Оценивайте</h3>
+            <p>Ставьте оценки сериалам, которые вы смотрели</p>
+        </div>
+        <div class="feature-card">
+            <h3>Находите</h3>
+            <p>Ищите сериалы по жанрам, году и статусу</p>
+        </div>
+        <div class="feature-card">
+            <h3>Открывайте</h3>
+            <p>Получайте персональные рекомендации на основе ваших оценок</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

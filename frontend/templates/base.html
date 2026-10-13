@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RecSys Series{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="/">RecSys Series</a>
+        </div>
+        <div class="nav-links">
+            <a href="/series">Сериалы</a>
+            {% if request.session.get('user_id') %}
+                <a href="/recommendation">Рекомендации</a>
+                <a href="/profile">Профиль</a>
+                <a href="/auth/logout">Выйти</a>
+            {% else %}
+                <a href="/auth/login">Войти</a>
+                <a href="/auth/register">Регистрация</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 RecSys Series</p>
+    </footer>
+</body>
+</html>
