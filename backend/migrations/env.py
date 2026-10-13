@@ -7,13 +7,15 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from backend.database import Base
+from backend.database import Base, DATABASE_URL
 from backend.models import User, Genre, Series, Rating, series_genres
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 target_metadata = Base.metadata
 
