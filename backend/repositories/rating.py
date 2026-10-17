@@ -30,23 +30,25 @@ class RatingRepository:
         return (
             self.db.query(Rating)
             .filter(Rating.series_id == series_id)
+            .order_by(Rating.id.desc())
             .offset(skip)
             .limit(limit)
             .all()
         )
 
-    def create(self, user_id: int, series_id: int, rating: int) -> Rating:
-        rating_obj = Rating(user_id=user_id, series_id=series_id, rating=rating)
+    def create(self, user_id: int, series_id: int, rating: int, comment: str | None = None) -> Rating:
+        rating_obj = Rating(user_id=user_id, series_id=series_id, rating=rating, comment=comment)
         self.db.add(rating_obj)
         self.db.commit()
         self.db.refresh(rating_obj)
         return rating_obj
 
-    def update(self, rating_id: int, rating: int) -> Rating | None:
+    def update(self, rating_id: int, rating: int, comment: str | None = None) -> Rating | None:
         rating_obj = self.get_by_id(rating_id)
         if not rating_obj:
             return None
         rating_obj.rating = rating
+        rating_obj.comment = comment
         self.db.commit()
         self.db.refresh(rating_obj)
         return rating_obj

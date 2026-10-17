@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from backend.database import Base
@@ -14,6 +14,7 @@ class Rating(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     series_id = Column(Integer, ForeignKey("series.id", ondelete="CASCADE"), nullable=False)
     rating = Column(Integer, nullable=False)
+    comment = Column(Text, nullable=True)
 
     user = relationship("User", back_populates="ratings")
     series = relationship("Series", back_populates="ratings")

@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from backend.models.series import Series, series_genres
@@ -12,6 +13,7 @@ class SeriesRepository:
 
     def get_all(
         self,
+        title: str | None = None,
         genre_ids: list[int] | None = None,
         release_year: int | None = None,
         status: str | None = None,
@@ -20,6 +22,14 @@ class SeriesRepository:
     ) -> list[Series]:
         query = self.db.query(Series)
 
+        if title:
+            pattern = f"%{title.strip()}%"
+            query = query.filter(
+                or_(
+                    Series.title_en.ilike(pattern),
+                    Series.title_original.ilike(pattern),
+                )
+            )
         if genre_ids:
             query = query.join(series_genres).filter(series_genres.c.genre_id.in_(genre_ids))
         if release_year:
@@ -27,7 +37,7 @@ class SeriesRepository:
         if status:
             query = query.filter(Series.status == status)
 
-        return query.offset(skip).limit(limit).all()
+        return query.distinct().offset(skip).limit(limit).all()
 
     def create(
         self,
@@ -39,6 +49,7 @@ class SeriesRepository:
         release_year: int | None = None,
         company: str | None = None,
         director: str | None = None,
+        poster_url: str | None = None,
         genre_ids: list[int] | None = None,
     ) -> Series:
 
@@ -50,7 +61,8 @@ class SeriesRepository:
             season_count=season_count,
             release_year=release_year,
             company=company,
-            director=director
+            director=director,
+            poster_url=poster_url
         )
 
         if genre_ids:
