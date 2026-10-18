@@ -5,8 +5,9 @@
 {% block content %}
 <div class="home-page">
     <div class="hero">
-        <h1>RecSys Series</h1>
-        <p>Рекомендательный сервис для подбора сериалов</p>
+        <div class="hero-badge">Персональные рекомендации</div>
+        <h1>Персональный рекомендательный сервис для сериалов и фильмов</h1>
+        <p>Оценивайте просмотренные сериалы, находите новые по жанрам и получайте персональные рекомендации на основе ваших предпочтений</p>
         <div class="hero-actions">
             {% if request.session.get('user_id') %}
                 <a href="/series" class="btn btn-primary btn-lg">Смотреть сериалы</a>
@@ -20,14 +21,17 @@
 
     <div class="features">
         <div class="feature-card">
+            <div class="feature-icon">⭐</div>
             <h3>Оценивайте</h3>
-            <p>Ставьте оценки сериалам, которые вы смотрели</p>
+            <p>Ставьте оценки от 1 до 5 и делитесь впечатлениями о сериалах</p>
         </div>
         <div class="feature-card">
+            <div class="feature-icon">🔍</div>
             <h3>Находите</h3>
-            <p>Ищите сериалы по жанрам, году и статусу</p>
+            <p>Ищите сериалы по названию, жанрам, году выпуска и статусу</p>
         </div>
         <div class="feature-card">
+            <div class="feature-icon">✨</div>
             <h3>Открывайте</h3>
             <p>Получайте персональные рекомендации на основе ваших оценок</p>
         </div>

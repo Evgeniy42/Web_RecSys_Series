@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
+{% macro rating_badge(value) -%}
+    {% if value >= 4 %}
+        <span class="rating-badge rating-badge-high">{{ value }}/5</span>
+    {% elif value >= 2 %}
+        <span class="rating-badge rating-badge-mid">{{ value }}/5</span>
+    {% else %}
+        <span class="rating-badge rating-badge-low">{{ value }}/5</span>
+    {% endif %}
+{%- endmacro %}
+
 {% block title %}{{ series.title_en }}{% endblock %}
 
 {% block content %}
@@ -9,8 +19,13 @@
         <a href="/series" class="btn btn-primary">К списку сериалов</a>
     {% else %}
         <div class="series-header">
-            <h1>{{ series.title_en }}</h1>
-            <p class="original-title">{{ series.title_original }}</p>
+            <div class="series-poster-large">
+                <img src="{{ series.poster_url or '/static/images/no_found.jpg' }}" alt="{{ series.title_en }}">
+            </div>
+            <div class="series-header-text">
+                <h1>{{ series.title_en }}</h1>
+                <p class="original-title">{{ series.title_original }}</p>
+            </div>
         </div>
 
         <div class="series-info">
@@ -57,28 +72,83 @@
 
         {% if request.session.get('user_id') %}
         <div class="rating-section">
-            <h3>Оценить сериал</h3>
+            {% if user_rating %}
+                <h3>Ваша оценка</h3>
 
-            {% if request.query_params.get('error') == 'invalid_rating' %}
-                <div class="alert alert-error">Оценка должна быть от 1 до 10</div>
-            {% endif %}
+                {% if request.query_params.get('error') == 'invalid_rating' %}
+                    <div class="alert alert-error">Оценка должна быть от 1 до 5</div>
+                {% endif %}
 
-            <form method="post" action="/ratings" class="rating-form-large">
-                <input type="hidden" name="series_id" value="{{ series.id }}">
-                <div class="rating-inputs">
-                    {% for i in range(1, 11) %}
-                        <label class="rating-radio">
-                            <input type="radio" name="rating" value="{{ i }}" required>
-                            <span>{{ i }}</span>
-                        </label>
-                    {% endfor %}
+                <div class="my-rating">
+                    {{ rating_badge(user_rating.rating) }}
+                    {% if user_rating.comment %}
+                        <p class="my-rating-comment">{{ user_rating.comment }}</p>
+                    {% endif %}
                 </div>
-                <button type="submit" class="btn btn-primary">Поставить оценку</button>
-            </form>
+
+                <details class="edit-rating-toggle" {% if request.query_params.get('edit') == '1' %}open{% endif %}>
+                    <summary class="btn btn-secondary btn-sm">Изменить</summary>
+                    <form method="post" action="/ratings/{{ user_rating.id }}/update" class="rating-form-large">
+                        <input type="hidden" name="series_id" value="{{ series.id }}">
+                        <div class="rating-inputs">
+                            {% for i in range(1, 6) %}
+                                <label class="rating-radio">
+                                    <input type="radio" name="rating" value="{{ i }}" {% if user_rating.rating == i %}checked{% endif %} required>
+                                    <span>{{ i }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <textarea name="comment" rows="3" placeholder="Ваш комментарий (необязательно)">{{ user_rating.comment or '' }}</textarea>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </form>
+                </details>
+            {% else %}
+                <h3>Оценить сериал</h3>
+
+                {% if request.query_params.get('error') == 'invalid_rating' %}
+                    <div class="alert alert-error">Оценка должна быть от 1 до 5</div>
+                {% endif %}
+
+                <form method="post" action="/ratings" class="rating-form-large">
+                    <input type="hidden" name="series_id" value="{{ series.id }}">
+                    <div class="rating-inputs">
+                        {% for i in range(1, 6) %}
+                            <label class="rating-radio">
+                                <input type="radio" name="rating" value="{{ i }}" required>
+                                <span>{{ i }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <textarea name="comment" rows="3" placeholder="Ваш комментарий (необязательно)"></textarea>
+                    <button type="submit" class="btn btn-primary">Поставить оценку</button>
+                </form>
+            {% endif %}
         </div>
         {% else %}
         <div class="rating-section">
             <p>Чтобы оценить сериал, <a href="/auth/login">войдите</a> или <a href="/auth/register">зарегистрируйтесь</a>.</p>
+        </div>
+        {% endif %}
+
+        {% if all_ratings %}
+        <div class="reviews-section">
+            <h3>Отзывы пользователей ({{ all_ratings|length }})</h3>
+            <div class="reviews-list">
+                {% for r in all_ratings %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="review-author-info">
+                                <img src="{{ r.user.avatar_url or '/static/images/users_avatars/unknown.jpg' }}" alt="{{ r.user.name }}" class="review-avatar">
+                                <span class="review-author">{{ r.user.name }}</span>
+                            </div>
+                            {{ rating_badge(r.rating) }}
+                        </div>
+                        {% if r.comment %}
+                            <p class="review-comment">{{ r.comment }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
 

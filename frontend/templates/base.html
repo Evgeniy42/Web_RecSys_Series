@@ -3,23 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}RecSys Series{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}">
+    <title>{% block title %}Персональный рекомендательный сервис для сериалов и фильмов{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/style.css') }}?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-brand">
-            <a href="/">RecSys Series</a>
+            <a href="/" class="brand-logo">
+                <span class="brand-icon">▶</span>
+                Rec Сервис
+            </a>
         </div>
-        <div class="nav-links">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Меню">☰</button>
+        <div class="nav-links" id="nav-links">
             <a href="/series">Сериалы</a>
             {% if request.session.get('user_id') %}
                 <a href="/recommendation">Рекомендации</a>
                 <a href="/profile">Профиль</a>
-                <a href="/auth/logout">Выйти</a>
+                <a href="/auth/logout" class="nav-logout">Выйти</a>
             {% else %}
                 <a href="/auth/login">Войти</a>
-                <a href="/auth/register">Регистрация</a>
+                <a href="/auth/register" class="nav-cta">Регистрация</a>
             {% endif %}
         </div>
     </nav>
@@ -29,7 +35,9 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; 2024 RecSys Series</p>
+        <p>&copy; 2024 Rec Сервис — Персональный рекомендательный сервис для сериалов и фильмов</p>
     </footer>
+
+    <script src="{{ url_for('static', path='/js/main.js') }}?v=3"></script>
 </body>
 </html>

@@ -6,61 +6,85 @@
 <div class="series-page">
     <h1>Список сериалов</h1>
 
-    <!-- Фильтры -->
-    <form method="get" action="/series" class="filters">
-        <select name="genre_id">
-            <option value="">Все жанры</option>
-            {% for genre in genres %}
-                <option value="{{ genre.id }}" {% if filters.genre_id == genre.id %}selected{% endif %}>
-                    {{ genre.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <input type="number" name="release_year" placeholder="Год выпуска" value="{{ filters.release_year or '' }}">
-        <input type="text" name="status" placeholder="Статус" value="{{ filters.status or '' }}">
-
-        <button type="submit" class="btn btn-primary">Фильтровать</button>
-        <a href="/series" class="btn btn-secondary">Сбросить</a>
+    <!-- Поиск -->
+    <form method="get" action="/series" class="search-form">
+        <input type="text" name="title" placeholder="Поиск по названию" value="{{ filters.title or '' }}">
+        <button type="submit" class="btn btn-primary">Найти</button>
     </form>
+
+    <!-- Фильтры (скрыты по умолчанию) -->
+    <details class="filters-toggle" {% if filters.genre_id or filters.release_year or filters.status %}open{% endif %}>
+        <summary class="btn btn-secondary">Фильтры</summary>
+        <form method="get" action="/series" class="filters">
+            {% if filters.title %}
+                <input type="hidden" name="title" value="{{ filters.title }}">
+            {% endif %}
+
+            <select name="genre_id">
+                <option value="">Все жанры</option>
+                {% for genre in genres %}
+                    <option value="{{ genre.id }}" {% if filters.genre_id == genre.id %}selected{% endif %}>
+                        {{ genre.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <input type="number" name="release_year" placeholder="Год выпуска" value="{{ filters.release_year or '' }}">
+
+            <select name="status">
+                <option value="">Любой статус</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="/series{% if filters.title %}?title={{ filters.title }}{% endif %}" class="btn btn-secondary">Сбросить</a>
+        </form>
+    </details>
 
     <!-- Список сериалов -->
     {% if series_list %}
         <div class="series-grid">
             {% for series in series_list %}
                 <div class="series-card">
-                    <h3>
-                        <a href="/series/{{ series.id }}">{{ series.title_en }}</a>
-                    </h3>
-                    <p class="original-title">{{ series.title_original }}</p>
+                    <a href="/series/{{ series.id }}" class="series-poster">
+                        <img src="{{ series.poster_url or '/static/images/no_found.jpg' }}" alt="{{ series.title_en }}" loading="lazy">
+                    </a>
+                    <div class="series-card-body">
+                        <h3>
+                            <a href="/series/{{ series.id }}">{{ series.title_en }}</a>
+                        </h3>
+                        <p class="original-title">{{ series.title_original }}</p>
 
-                    <div class="series-meta">
-                        <span>Год: {{ series.release_year or '—' }}</span>
-                        <span>Статус: {{ series.status }}</span>
-                        <span>Сезонов: {{ series.season_count }}</span>
-                        <span>Серий: {{ series.episode_count }}</span>
-                    </div>
-
-                    {% if series.genres %}
-                        <div class="genres">
-                            {% for genre in series.genres %}
-                                <span class="genre-tag">{{ genre.name }}</span>
-                            {% endfor %}
+                        <div class="series-meta">
+                            <span>Год: {{ series.release_year or '—' }}</span>
+                            <span>Статус: {{ series.status }}</span>
+                            <span>Сезонов: {{ series.season_count }}</span>
+                            <span>Серий: {{ series.episode_count }}</span>
                         </div>
-                    {% endif %}
 
-                    {% if request.session.get('user_id') %}
-                        <form method="post" action="/ratings" class="rating-form">
-                            <input type="hidden" name="series_id" value="{{ series.id }}">
-                            <select name="rating" required>
-                                <option value="">Оценить</option>
-                                {% for i in range(1, 11) %}
-                                    <option value="{{ i }}">{{ i }}</option>
+                        {% if series.genres %}
+                            <div class="genres">
+                                {% for genre in series.genres %}
+                                    <span class="genre-tag">{{ genre.name }}</span>
                                 {% endfor %}
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm">Оценить</button>
-                        </form>
-                    {% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if request.session.get('user_id') %}
+                            <form method="post" action="/ratings" class="rating-form">
+                                <input type="hidden" name="series_id" value="{{ series.id }}">
+                                <select name="rating" required>
+                                    <option value="">Оценить</option>
+                                    {% for i in range(1, 6) %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm">Оценить</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </div>
             {% endfor %}
         </div>
