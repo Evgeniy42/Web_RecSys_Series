@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
+from fastapi import APIRouter, Depends, Request, Form, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.repositories.user import UserRepository
-from backend.utils.security import hash_password, verify_password
+from backend.services.user import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -27,23 +26,16 @@ async def register(
     db: Session = Depends(get_db),
 ):
     """Обработка регистрации"""
-    user_repo = UserRepository(db)
+    user_service = UserService(db)
+    user, error = user_service.register(name=name, email=email, password=password)
 
-    # Проверяем, существует ли пользователь
-    existing_user = user_repo.get_by_email(email)
-    if existing_user:
+    if error:
         return request.app.state.templates.TemplateResponse(
             "auth/register.html",
-            {"request": request, "error": "Пользователь с таким email уже существует"}
+            {"request": request, "error": error}
         )
 
-    # Создаём пользователя
-    hashed_password = hash_password(password)
-    user = user_repo.create(name=name, email=email, password=hashed_password)
-
-    # Сохраняем в сессию
     request.session["user_id"] = user.id
-
     return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
 
 
@@ -64,18 +56,16 @@ async def login(
     db: Session = Depends(get_db),
 ):
     """Обработка входа"""
-    user_repo = UserRepository(db)
-    user = user_repo.get_by_email(email)
+    user_service = UserService(db)
+    user = user_service.authenticate(email=email, password=password)
 
-    if not user or not verify_password(password, user.password):
+    if not user:
         return request.app.state.templates.TemplateResponse(
             "auth/login.html",
             {"request": request, "error": "Неверный email или пароль"}
         )
 
-    # Сохраняем в сессию
     request.session["user_id"] = user.id
-
     return RedirectResponse(url="/profile", status_code=status.HTTP_303_SEE_OTHER)
 
 

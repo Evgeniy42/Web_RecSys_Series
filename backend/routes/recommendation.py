@@ -1,25 +1,25 @@
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
-from backend.repositories.user import UserRepository
+from backend.services.user import UserService
+from backend.services.recommendation import RecommendationService
 
 router = APIRouter(prefix="/recommendation", tags=["recommendation"])
 
 
 @router.get("", response_class=HTMLResponse)
 async def recommendation(request: Request, db: Session = Depends(get_db)):
-    """Страница рекомендаций (заглушка)"""
-    user_id = request.session.get("user_id")
-    if not user_id:
+    """Страница рекомендаций"""
+    user_service = UserService(db)
+    user = user_service.get_current_user(request.session)
+
+    if not user:
         return RedirectResponse(url="/auth/login", status_code=303)
 
-    user_repo = UserRepository(db)
-    user = user_repo.get_by_id(user_id)
-
-    # ЗАГЛУШКА: здесь будет вызов модели рекомендаций
-    recommended_series = []
+    recommendation_service = RecommendationService(db)
+    recommended_series = recommendation_service.get_for_user(user.id)
 
     return request.app.state.templates.TemplateResponse(
         "recommendation/result.html",
