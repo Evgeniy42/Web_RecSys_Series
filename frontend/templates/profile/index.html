@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<div class="profile">
+    <h1>Профиль пользователя</h1>
+
+    <div class="profile-info">
+        <img src="{{ user.avatar_url or '/static/images/users_avatars/unknown.jpg' }}" alt="Аватар" class="profile-avatar">
+        <div class="profile-details">
+            <h2>{{ user.name }}</h2>
+            <p>Email: {{ user.email }}</p>
+            <form method="post" action="/profile/avatar" enctype="multipart/form-data" class="avatar-upload-form">
+                <div class="file-input-wrapper">
+                    <input type="file" name="file" id="avatar-file-input" accept="image/*" required>
+                    <label for="avatar-file-input" class="btn btn-file">Выберите файл</label>
+                    <span class="file-name" id="avatar-file-name">Файл не выбран</span>
+                </div>
+                <button type="submit" class="btn btn-secondary btn-sm">Загрузить аватар</button>
+            </form>
+            {% if request.query_params.get('error') == 'invalid_file_type' %}
+                <p class="avatar-error">Допустимые форматы: JPG, PNG, GIF, WebP</p>
+            {% endif %}
+            {% if request.query_params.get('error') == 'file_too_large' %}
+                <p class="avatar-error">Файл слишком большой (максимум 5 МБ)</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3>Мои оценки</h3>
+
+    {% if ratings %}
+        <div class="ratings-list">
+            {% for rating in ratings %}
+                <div class="rating-item">
+                    <div class="rating-series">
+                        <a href="/series/{{ rating.series.id }}" class="rating-poster">
+                            <img src="{{ rating.series.poster_url or '/static/images/no_found.jpg' }}" alt="{{ rating.series.title_en }}">
+                        </a>
+                        <div class="rating-series-info">
+                            <a href="/series/{{ rating.series.id }}">{{ rating.series.title_en }}</a>
+                            <span class="rating-year">({{ rating.series.release_year }})</span>
+                            {% if rating.comment %}
+                                <p class="rating-comment-preview">{{ rating.comment }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="rating-value">
+                        <span class="stars">{{ rating.rating }}/5</span>
+                        <form method="post" action="/ratings/{{ rating.id }}/delete" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>Вы ещё не оценили ни один сериал.</p>
+        <a href="/series" class="btn btn-primary">Найти сериалы</a>
+    {% endif %}
+</div>
+{% endblock %}

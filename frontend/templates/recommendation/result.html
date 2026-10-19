@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Рекомендации{% endblock %}
+
+{% block content %}
+<div class="recommendation-page">
+    <h1>Рекомендации для {{ user.name }}</h1>
+
+    {% if message %}
+        <div class="alert alert-info">{{ message }}</div>
+    {% endif %}
+
+    {% if recommendations %}
+        <div class="series-grid">
+            {% for series in recommendations %}
+                <div class="series-card">
+                    <h3>
+                        <a href="/series/{{ series.id }}">{{ series.title_en }}</a>
+                    </h3>
+                    <p class="original-title">{{ series.title_original }}</p>
+                    <div class="series-meta">
+                        <span>Год: {{ series.release_year or '—' }}</span>
+                        <span>Статус: {{ series.status }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>Пока нет рекомендаций. Оцените больше сериалов, чтобы получить персональные рекомендации!</p>
+            <a href="/series" class="btn btn-primary">Перейти к сериалам</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <div class="hero">
+        <div class="hero-badge">Персональные рекомендации</div>
+        <h1>Персональный рекомендательный сервис для сериалов и фильмов</h1>
+        <p>Оценивайте просмотренные сериалы, находите новые по жанрам и получайте персональные рекомендации на основе ваших предпочтений</p>
+        <div class="hero-actions">
+            {% if request.session.get('user_id') %}
+                <a href="/series" class="btn btn-primary btn-lg">Смотреть сериалы</a>
+                <a href="/recommendation" class="btn btn-secondary btn-lg">Мои рекомендации</a>
+            {% else %}
+                <a href="/auth/register" class="btn btn-primary btn-lg">Начать</a>
+                <a href="/auth/login" class="btn btn-secondary btn-lg">Войти</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Оценивайте</h3>
+            <p>Ставьте оценки от 1 до 5 и делитесь впечатлениями о сериалах</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Находите</h3>
+            <p>Ищите сериалы по названию, жанрам, году выпуска и статусу</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✨</div>
+            <h3>Открывайте</h3>
+            <p>Получайте персональные рекомендации на основе ваших оценок</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
