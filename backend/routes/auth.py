@@ -12,8 +12,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 async def register_form(request: Request):
     """Страница регистрации"""
     return request.app.state.templates.TemplateResponse(
+        request,
         "auth/register.html",
-        {"request": request}
     )
 
 
@@ -31,8 +31,9 @@ async def register(
 
     if error:
         return request.app.state.templates.TemplateResponse(
+            request,
             "auth/register.html",
-            {"request": request, "error": error}
+            {"error": error},
         )
 
     request.session["user_id"] = user.id
@@ -43,8 +44,8 @@ async def register(
 async def login_form(request: Request):
     """Страница входа"""
     return request.app.state.templates.TemplateResponse(
+        request,
         "auth/login.html",
-        {"request": request}
     )
 
 
@@ -61,8 +62,9 @@ async def login(
 
     if not user:
         return request.app.state.templates.TemplateResponse(
+            request,
             "auth/login.html",
-            {"request": request, "error": "Неверный email или пароль"}
+            {"error": "Неверный email или пароль"},
         )
 
     request.session["user_id"] = user.id

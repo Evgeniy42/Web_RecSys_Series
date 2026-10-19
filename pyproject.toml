@@ -12,10 +12,12 @@ fastapi = "^0.115"          # FastAPI — основной веб-фреймво
 starlette = "^0.40"         # SessionMiddleware для сессий (входит в fastapi, но используется явно)
 jinja2 = "^3.1"             # Шаблонизатор Jinja2 (HTML-шаблоны)
 python-multipart = "^0.0.9" # Поддержка форм и загрузки файлов (Form / UploadFile)
+itsdangerous = "^2.2"       # Подпись сессионных cookie (SessionMiddleware)
 
 # База данных
 sqlalchemy = "^2.0"         # ORM для работы с PostgreSQL
-psycopg2-binary = "^2.9"    # Драйвер PostgreSQL
+psycopg2-binary = "^2.9"    # Драйвер PostgreSQL (устаревший интерфейс DBAPI)
+psycopg = "^3.2"            # Драйвер PostgreSQL (новый интерфейс DBAPI, используется SQLAlchemy 2.0 по умолчанию)
 alembic = "^1.13"           # Миграции базы данных
 
 # Безопасность

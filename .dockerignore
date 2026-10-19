@@ -1,0 +1,30 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Виртуальные окружения
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# Локальные файлы
+.env
+*.log
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Тесты (не нужны в production-образе)
+tests/
+test.py

@@ -6,7 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/recsys_series")
+# В Docker DATABASE_URL передаётся через environment (docker-compose.yml).
+# Локально — берётся из .env или используется значение по умолчанию.
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://user:password@localhost:5432/recsys_series",
+)
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

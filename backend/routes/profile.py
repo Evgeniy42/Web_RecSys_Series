@@ -29,9 +29,9 @@ async def profile(request: Request, db: Session = Depends(get_db)):
     user_ratings = rating_service.get_by_user(user.id)
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "profile/index.html",
         {
-            "request": request,
             "user": user,
             "ratings": user_ratings,
         }

@@ -32,8 +32,9 @@ async def series_list(
     )
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "series/list.html",
-        {"request": request, **context}
+        context,
     )
 
 
@@ -47,12 +48,14 @@ async def series_detail(series_id: int, request: Request, db: Session = Depends(
 
     if not context:
         return request.app.state.templates.TemplateResponse(
+            request,
             "series/detail.html",
-            {"request": request, "error": "Сериал не найден"},
+            {"error": "Сериал не найден"},
             status_code=404,
         )
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "series/detail.html",
-        {"request": request, **context}
+        context,
     )

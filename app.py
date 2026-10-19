@@ -30,6 +30,6 @@ app.include_router(ratings_router)
 async def index(request: Request):
     """Главная страница"""
     return templates.TemplateResponse(
+        request,
         "index.html",
-        {"request": request}
     )

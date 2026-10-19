@@ -22,9 +22,9 @@ async def recommendation(request: Request, db: Session = Depends(get_db)):
     recommended_series = recommendation_service.get_for_user(user.id)
 
     return request.app.state.templates.TemplateResponse(
+        request,
         "recommendation/result.html",
         {
-            "request": request,
             "user": user,
             "recommendations": recommended_series,
             "message": "Рекомендации скоро появятся!",
