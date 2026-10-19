@@ -1,0 +1,37 @@
+[project]
+name = "recsys-series"
+version = "0.1.0"
+description = "Рекомендательный сервис для подбора сериалов"
+requires-python = ">=3.13"
+
+# ─── Основные зависимости ────────────────────────────────────────────────
+
+[project.dependencies]
+# Веб-фреймворк
+fastapi = "^0.115"          # FastAPI — основной веб-фреймворк
+starlette = "^0.40"         # SessionMiddleware для сессий (входит в fastapi, но используется явно)
+jinja2 = "^3.1"             # Шаблонизатор Jinja2 (HTML-шаблоны)
+python-multipart = "^0.0.9" # Поддержка форм и загрузки файлов (Form / UploadFile)
+
+# База данных
+sqlalchemy = "^2.0"         # ORM для работы с PostgreSQL
+psycopg2-binary = "^2.9"    # Драйвер PostgreSQL
+alembic = "^1.13"           # Миграции базы данных
+
+# Безопасность
+bcrypt = "^4.2"             # Хеширование паролей
+
+# Конфигурация
+python-dotenv = "^1.0"      # Загрузка переменных окружения из .env
+
+# HTTP-клиент (скрипт импорта данных из Кинопоиск API)
+requests = "^2.32"          # Синхронный HTTP-клиент
+
+# ─── Зависимости для разработки и тестирования ───────────────────────────
+
+[project.optional-dependencies]
+dev = [
+    "uvicorn[standard]",    # ASGI-сервер для запуска FastAPI
+    "pytest",               # Фреймворк для тестирования
+    "httpx",                # HTTP-клиент для TestClient в интеграционных тестах
+]
