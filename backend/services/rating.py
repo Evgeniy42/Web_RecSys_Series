@@ -4,7 +4,7 @@ from backend.models.rating import Rating
 from backend.repositories.rating import RatingRepository
 
 MIN_RATING = 1
-MAX_RATING = 5
+MAX_RATING = 10
 
 
 class RatingService:

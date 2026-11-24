@@ -11,15 +11,13 @@ class SeriesRepository:
     def get_by_id(self, series_id: int) -> Series | None:
         return self.db.query(Series).filter(Series.id == series_id).first()
 
-    def get_all(
+    def _filter_query(
         self,
         title: str | None = None,
         genre_ids: list[int] | None = None,
         release_year: int | None = None,
         status: str | None = None,
-        skip: int = 0,
-        limit: int = 100,
-    ) -> list[Series]:
+    ):
         query = self.db.query(Series)
 
         if title:
@@ -37,7 +35,39 @@ class SeriesRepository:
         if status:
             query = query.filter(Series.status == status)
 
+        return query
+
+    def get_all(
+        self,
+        title: str | None = None,
+        genre_ids: list[int] | None = None,
+        release_year: int | None = None,
+        status: str | None = None,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> list[Series]:
+        query = self._filter_query(
+            title=title,
+            genre_ids=genre_ids,
+            release_year=release_year,
+            status=status,
+        )
         return query.distinct().offset(skip).limit(limit).all()
+
+    def count(
+        self,
+        title: str | None = None,
+        genre_ids: list[int] | None = None,
+        release_year: int | None = None,
+        status: str | None = None,
+    ) -> int:
+        query = self._filter_query(
+            title=title,
+            genre_ids=genre_ids,
+            release_year=release_year,
+            status=status,
+        )
+        return query.distinct().count()
 
     def create(
         self,
@@ -50,6 +80,7 @@ class SeriesRepository:
         company: str | None = None,
         director: str | None = None,
         poster_url: str | None = None,
+        description: str | None = None,
         genre_ids: list[int] | None = None,
     ) -> Series:
 
@@ -62,7 +93,8 @@ class SeriesRepository:
             release_year=release_year,
             company=company,
             director=director,
-            poster_url=poster_url
+            poster_url=poster_url,
+            description=description
         )
 
         if genre_ids:

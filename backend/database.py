@@ -6,8 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# В Docker DATABASE_URL передаётся через environment (docker-compose.yml).
-# Локально — берётся из .env или используется значение по умолчанию.
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://user:password@localhost:5432/recsys_series",

@@ -25,6 +25,8 @@ class Series(Base):
     company = Column(String(255), nullable=True)
     director = Column(String(255), nullable=True)
     poster_url = Column(String(500), nullable=True)
+    description = Column(String(2000), nullable=True)
+    tmdb_id = Column(Integer, nullable=True, unique=True, index=True)
 
     genres = relationship("Genre", secondary=series_genres, back_populates="series")
     ratings = relationship("Rating", back_populates="series", cascade="all, delete-orphan")

@@ -6,7 +6,7 @@ from backend.services.rating import RatingService
 class TestIsValid:
     def test_valid_ratings(self, db_session):
         service = RatingService(db_session)
-        for r in range(1, 6):
+        for r in range(1, 11):
             assert service.is_valid(r) is True
 
     def test_too_low(self, db_session):
@@ -16,8 +16,8 @@ class TestIsValid:
 
     def test_too_high(self, db_session):
         service = RatingService(db_session)
-        assert service.is_valid(6) is False
-        assert service.is_valid(10) is False
+        assert service.is_valid(11) is False
+        assert service.is_valid(15) is False
 
     def test_float_in_range(self, db_session):
         service = RatingService(db_session)

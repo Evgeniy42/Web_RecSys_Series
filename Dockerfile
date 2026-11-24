@@ -17,16 +17,18 @@ RUN pip install --no-cache-dir --prefix=/install \
     fastapi "uvicorn[standard]" \
     sqlalchemy psycopg2-binary psycopg alembic \
     bcrypt python-dotenv \
-    jinja2 python-multipart itsdangerous requests
+    jinja2 python-multipart itsdangerous requests \
+    numpy pandas scipy scikit-learn
 
 # ─── Финальный образ ─────────────────────────────────────────────────────
 FROM python:3.13-slim
 
 WORKDIR /app
 
-# Системные библиотеки для runtime (libpq для psycopg2)
+# Системные библиотеки для runtime (libpq для psycopg2, pg_dump для бэкапа)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Копируем установленные зависимости из builder
@@ -44,4 +46,4 @@ RUN mkdir -p frontend/static/images/users_avatars
 EXPOSE 8000
 
 # Запускаем миграции, затем приложение
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips '*'"]

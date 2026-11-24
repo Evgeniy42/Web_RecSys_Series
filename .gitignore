@@ -1,5 +1,7 @@
 .idea\
 .env
+.env.local
+.agents
 __pycache__/
 *.pyc
 *.pyo
@@ -18,3 +20,4 @@ dist/
 build/
 db_script.sql
 test.py
+.tmp_deps/
