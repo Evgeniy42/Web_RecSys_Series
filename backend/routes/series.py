@@ -16,19 +16,17 @@ async def series_list(
     genre_id: Optional[str] = Query(None),
     release_year: Optional[str] = Query(None),
     status: Optional[str] = Query(None),
-    skip: int = Query(0),
-    limit: int = Query(100),
+    page: int = Query(1, ge=1),
     db: Session = Depends(get_db),
 ):
-    """Список сериалов с поиском и фильтрацией"""
+    """Список сериалов с поиском, фильтрацией и пагинацией"""
     series_service = SeriesService(db)
     context = series_service.search(
         title=title,
         genre_id_raw=genre_id,
         release_year_raw=release_year,
         status=status,
-        skip=skip,
-        limit=limit,
+        page=page,
     )
 
     return request.app.state.templates.TemplateResponse(

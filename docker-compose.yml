@@ -30,6 +30,9 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-recsys_user}:${POSTGRES_PASSWORD:-recsys_password}@db:5432/${POSTGRES_DB:-recsys_series}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+    # Облачные ключи бэкапа (YANDEX_API_KEY, DROPBOX_*) и прочие секреты .env
+    env_file: .env
     ports:
       - "8000:8000"
     volumes:
@@ -37,9 +40,67 @@ services:
     networks:
       - recsys_network
 
+  # ─── WordPress (контентный сайт: блог, новости, информационные страницы) ───
+  wordpress:
+    image: wordpress:6.7-apache
+    container_name: recsys_wordpress
+    restart: unless-stopped
+    depends_on:
+      wordpress_db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: wordpress_db:3306
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER:-wp_user}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp_password}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
+    ports:
+      - "8080:80"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - recsys_network
+
+  # ─── Adminer (веб-интерфейс к PostgreSQL) ────────────────────────────────
+  adminer:
+    image: adminer:latest
+    container_name: recsys_adminer
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ADMINER_DEFAULT_SERVER: db   # предзаполненный сервер на форме входа
+      ADMINER_DESIGN: pepa-lin-dark
+    ports:
+      - "8081:8080"
+    networks:
+      - recsys_network
+
+  # БД WordPress (WordPress работает только с MySQL/MariaDB, не с PostgreSQL)
+  wordpress_db:
+    image: mariadb:11
+    container_name: recsys_wordpress_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_ROOT_PASSWORD:-wp_root_password}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
+      MYSQL_USER: ${WORDPRESS_DB_USER:-wp_user}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp_password}
+    volumes:
+      - wordpress_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - recsys_network
+
 volumes:
   postgres_data:
   avatars_data:
+  wordpress_data:
+  wordpress_db_data:
 
 networks:
   recsys_network:

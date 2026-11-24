@@ -31,7 +31,7 @@ class TestCreateRating:
     def test_rejects_invalid_rating(self, auth_client, seed_series):
         response = auth_client.post(
             "/ratings",
-            data={"series_id": seed_series[0].id, "rating": 10, "comment": "Too high"},
+            data={"series_id": seed_series[0].id, "rating": 11, "comment": "Too high"},
             follow_redirects=False,
         )
         assert response.status_code == 303
