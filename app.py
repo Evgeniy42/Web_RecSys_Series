@@ -16,9 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 async def _backup_loop() -> None:
-    """Автоматический бэкап БД: раз в BACKUP_INTERVAL_DAYS дней."""
+    """Автоматический бэкап БД.
+
+    Первый запуск — через минуту после старта приложения (проверка
+    работоспособности и сразу первая копия), далее — раз в
+    BACKUP_INTERVAL_DAYS дней. Учти: каждый рестарт контейнера = ещё один
+    бэкап.
+    """
+    await asyncio.sleep(60)  # дать приложению полностью подняться
     while True:
-        await asyncio.sleep(BACKUP_INTERVAL_DAYS * 24 * 3600)
         try:
             report = await asyncio.to_thread(run_backup)
             if report.ok:
@@ -27,6 +33,7 @@ async def _backup_loop() -> None:
                 logger.error("Бэкап с ошибками: %s", report)
         except Exception:
             logger.exception("Автоматический бэкап завершился с исключением")
+        await asyncio.sleep(BACKUP_INTERVAL_DAYS * 24 * 3600)
 
 
 @asynccontextmanager

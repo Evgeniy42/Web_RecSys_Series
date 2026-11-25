@@ -11,7 +11,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # только localhost: на общем сервере наружу PostgreSQL выставлять не надо
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-recsys_user} -d $${POSTGRES_DB:-recsys_series}"]
       interval: 5s
@@ -34,7 +35,7 @@ services:
     # Облачные ключи бэкапа (YANDEX_API_KEY, DROPBOX_*) и прочие секреты .env
     env_file: .env
     ports:
-      - "8000:8000"
+      - "8090:8000"
     volumes:
       - avatars_data:/app/frontend/static/images/users_avatars
     networks:
@@ -54,7 +55,7 @@ services:
       WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wp_password}
       WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME:-wordpress}
     ports:
-      - "8080:80"
+      - "8092:80"
     volumes:
       - wordpress_data:/var/www/html
     networks:
@@ -72,7 +73,7 @@ services:
       ADMINER_DEFAULT_SERVER: db   # предзаполненный сервер на форме входа
       ADMINER_DESIGN: pepa-lin-dark
     ports:
-      - "8081:8080"
+      - "8091:8080"
     networks:
       - recsys_network
 
