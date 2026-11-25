@@ -5,9 +5,9 @@ services:
     container_name: recsys_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-recsys_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-recsys_password}
-      POSTGRES_DB: ${POSTGRES_DB:-recsys_series}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -43,7 +43,7 @@ services:
 
   # ─── WordPress (контентный сайт: блог, новости, информационные страницы) ───
   wordpress:
-    image: wordpress:6.7-apache
+    image: wordpress:latest
     container_name: recsys_wordpress
     restart: unless-stopped
     depends_on:
