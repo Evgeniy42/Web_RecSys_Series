@@ -192,8 +192,13 @@ def _ensure_yandex_dir(remote_dir: str, token: str) -> None:
             params={"path": path},
             headers={"Authorization": f"OAuth {token}"}, timeout=30,
         )
+        # 409 «папка уже существует» — это ок; всё остальное — ошибка
+        try:
+            err_code = resp.json().get("error", "")
+        except ValueError:
+            err_code = ""
         already = (resp.status_code == 409
-                   and "ExistedDirectory" in resp.text)
+                   and err_code == "DiskPathPointsToExistentDirectoryError")
         if resp.status_code != 201 and not already:
             raise BackupError(f"Яндекс Диск (создание папки {path}): "
                               f"HTTP {resp.status_code}: {resp.text[:300]}")
